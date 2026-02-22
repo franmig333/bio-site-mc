@@ -297,11 +297,26 @@
             margin-top: 1rem;
             font-size: 0.8rem;
             color: var(--text-muted);
-            opacity: 0.6;
+            opacity: 0.8;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-wrap: wrap;
+            text-align: center;
             gap: 10px;
+            padding: 0 1rem;
+        }
+
+        .credit-link {
+            color: var(--accent-turquoise);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        .credit-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
         }
 
         .admin-link {
@@ -348,6 +363,7 @@
 
         <footer class="footer">
             <span id="footer-text">&copy; 2026 MC Motors</span>
+            <span id="footer-credit"></span>
             <a href="login.html" class="admin-link" title="Admin">
                 <svg viewBox="0 0 24 24">
                     <path
@@ -442,7 +458,21 @@
             titleEl.style.fontSize = `${data.tamanos.tituloSize}px`;
             subtitleEl.style.fontSize = `${data.tamanos.subtituloSize}px`;
 
-            document.getElementById('footer-text').innerText = `© 2026 ${data.titulo || "MC Motors"}`;
+            // 5. Footer & Créditos
+            const footerTextEl = document.getElementById('footer-text');
+            const footerCreditEl = document.getElementById('footer-credit');
+
+            const baseText = (data.footer && data.footer.texto !== undefined) ? data.footer.texto : `© 2026 ${data.titulo || "MC Motors"}`;
+            footerTextEl.innerText = baseText;
+
+            if (data.footer && data.footer.credito && data.footer.url) {
+                footerCreditEl.innerHTML = `<a href="${data.footer.url}" target="_blank" rel="noopener noreferrer" class="credit-link">${data.footer.credito}</a>`;
+            } else if (!data.footer) {
+                // Fallback a defecto si no existe el bloque en versiones viejas
+                footerCreditEl.innerHTML = `<a href="https://wa.me/593984083776?text=Hola%20T_LEVA,%20vi%20tu%20trabajo%20en%20el%20sitio%20de%20MC%20Motors." target="_blank" rel="noopener noreferrer" class="credit-link">diseño T_LEVA</a>`;
+            } else {
+                footerCreditEl.innerHTML = ''; // Si lo borraron explícitamente en Dashboard
+            }
 
             // 2. Estética
             if (data.estetica) {

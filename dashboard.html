@@ -424,6 +424,27 @@
                 <button type="button" class="add-btn" onclick="agregarBoton()">+ Añadir Botón de Enlace</button>
             </div>
 
+            <!-- Sección Pie de Página / Créditos -->
+            <div class="section">
+                <h2>Pie de Página (Footer)</h2>
+
+                <div class="form-group flex-row">
+                    <div class="flex-1">
+                        <label>Texto Principal del Footer</label>
+                        <input type="text" id="footerText" placeholder="Ej: MC Motors 2026." required>
+                    </div>
+                    <div class="flex-1">
+                        <label>Crédito / Agencia</label>
+                        <input type="text" id="footerCredit" placeholder="Ej: diseño T_LEVA">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Enlace del Crédito (URL Whatsapp/Web)</label>
+                    <input type="url" id="footerUrl" placeholder="https://wa.me/..." required>
+                </div>
+            </div>
+
             <div class="actions">
                 <a href="index.html" class="back-btn">Ver sitio</a>
                 <button type="submit" class="save-btn">Guardar Todo Completo</button>
@@ -468,7 +489,12 @@
             botones: [
                 { id: "btn-1", texto: "Agendar Cita", url: "https://wa.me/593980703270", icono: "fa-brands fa-whatsapp" },
                 { id: "btn-2", texto: "Nuestra Ubicación", url: "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9", icono: "fa-solid fa-location-dot" }
-            ]
+            ],
+            footer: {
+                texto: "MC Motors 2026.",
+                credito: "diseño T_LEVA",
+                url: "https://wa.me/593984083776?text=Hola%20T_LEVA,%20vi%20tu%20trabajo%20en%20el%20sitio%20de%20MC%20Motors."
+            }
         };
 
         // Icon Map Helpers
@@ -542,6 +568,17 @@
                 data.botones.forEach(btn => agregarBotonDOM(btn.id || 'btn-' + Math.random(), btn.texto, btn.url, btn.icono));
             } else {
                 defaultData.botones.forEach(btn => agregarBotonDOM(btn.id, btn.texto, btn.url, btn.icono));
+            }
+
+            // Footer
+            if (data.footer) {
+                document.getElementById('footerText').value = data.footer.texto || "";
+                document.getElementById('footerCredit').value = data.footer.credito || "";
+                document.getElementById('footerUrl').value = data.footer.url || "";
+            } else {
+                document.getElementById('footerText').value = defaultData.footer.texto;
+                document.getElementById('footerCredit').value = defaultData.footer.credito;
+                document.getElementById('footerUrl').value = defaultData.footer.url;
             }
         });
 
@@ -691,7 +728,12 @@
                         url: document.getElementById('cvUrl').value,
                         archivo: finalCvFileValue
                     },
-                    botones: botonesArray
+                    botones: botonesArray,
+                    footer: {
+                        texto: document.getElementById('footerText').value,
+                        credito: document.getElementById('footerCredit').value,
+                        url: document.getElementById('footerUrl').value
+                    }
                 };
 
                 localStorage.setItem('mc_motors_dynamic_v3', JSON.stringify(configData));
