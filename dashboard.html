@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MC Motors | Panel de Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #000000;
+            --text-color: #c8cccd;
+            --btn-bg: #231f20;
+            --btn-hover: #566065;
+            --accent: #00a19b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--btn-hover);
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        input[type="url"],
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--btn-hover);
+            background: var(--btn-bg);
+            color: white;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        div.color-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 6px;
+        }
+
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        button.save-btn {
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        button.back-btn {
+            background: var(--btn-hover);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Panel de Control</h1>
+            <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+        </div>
+
+        <form id="dashboard-form">
+            <div class="form-group">
+                <label>URL de Foto de Perfil / Logo</label>
+                <input type="url" id="logoUrl" placeholder="https://ejemplo.com/logo.jpg">
+            </div>
+
+            <div class="form-group">
+                <label>Color de Acento (Bordes y Hover)</label>
+                <div class="color-picker">
+                    <input type="color" id="accentColor" value="#00a19b">
+                    <span id="color-hex">#00a19b</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Enlace de WhatsApp</label>
+                <input type="url" id="whatsappUrl" placeholder="https://wa.me/..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Enlace de Instagram</label>
+                <input type="url" id="instagramUrl" placeholder="https://instagram.com/..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Enlace de Ubicación (Google Maps)</label>
+                <input type="url" id="ubicacionUrl" placeholder="https://maps.app.goo.gl/..." required>
+            </div>
+
+            <div class="actions">
+                <a href="index.html" class="back-btn">Ver sitio</a>
+                <button type="submit" class="save-btn">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="toast" class="toast">Guardado correctamente</div>
+
+    <script>
+        // Check Auth
+        if (sessionStorage.getItem('is_admin') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        // Live hex update
+        const colorInput = document.getElementById('accentColor');
+        const colorHex = document.getElementById('color-hex');
+        colorInput.addEventListener('input', (e) => {
+            colorHex.textContent = e.target.value;
+        });
+
+        // Load existing data
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = JSON.parse(localStorage.getItem('mc_motors_config') || '{}');
+
+            if (data.logoUrl) document.getElementById('logoUrl').value = data.logoUrl;
+            if (data.accentColor) {
+                document.getElementById('accentColor').value = data.accentColor;
+                colorHex.textContent = data.accentColor;
+            }
+            if (data.whatsappUrl) document.getElementById('whatsappUrl').value = data.whatsappUrl;
+            else document.getElementById('whatsappUrl').value = "https://wa.me/593980703270?text=¡Hola,%20MC%20Motors!%20🚗%20Vengo%20de%20su%20perfil.%20Me%20gustaría%20conocer%20qué%20servicios%20realizan%20y%20agendar%20una%20revisión%20para%20mi%20vehículo.%20¿Me%20podrían%20ayudar%20con%20la%20disponibilidad?";
+
+            if (data.instagramUrl) document.getElementById('instagramUrl').value = data.instagramUrl;
+            else document.getElementById('instagramUrl').value = "https://instagram.com/mcmotors";
+
+            if (data.ubicacionUrl) document.getElementById('ubicacionUrl').value = data.ubicacionUrl;
+            else document.getElementById('ubicacionUrl').value = "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9";
+        });
+
+        // Save data
+        document.getElementById('dashboard-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const configData = {
+                logoUrl: document.getElementById('logoUrl').value,
+                accentColor: document.getElementById('accentColor').value,
+                whatsappUrl: document.getElementById('whatsappUrl').value,
+                instagramUrl: document.getElementById('instagramUrl').value,
+                ubicacionUrl: document.getElementById('ubicacionUrl').value
+            };
+
+            localStorage.setItem('mc_motors_config', JSON.stringify(configData));
+
+            const toast = document.getElementById('toast');
+            toast.style.opacity = 1;
+            setTimeout(() => { toast.style.opacity = 0; }, 2000);
+        });
+
+        function logout() {
+            sessionStorage.removeItem('is_admin');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>
