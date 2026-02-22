@@ -5,15 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MC Motors | Links</title>
+    <!-- Use a modern sans-serif font -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Variables de color de la marca MC Motors */
-            --bg-color: #000000;
-            --text-color: #c8cccd;
+            --dark-bg: #000000;
+            --accent-turquoise: #00a19b;
+            --accent-turquoise-hover: #00a19b;
+            --accent-turquoise-light: rgba(0, 161, 155, 0.15);
+            --text-main: #fcfcfc;
+            --text-muted: #c8cccd;
             --btn-bg: #231f20;
             --btn-hover: #566065;
-            --accent: #00a19b;
         }
 
         * {
@@ -24,13 +27,14 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--dark-bg);
+            /* Subtle Carbon Fiber Texture using repeating gradients */
             background-image:
                 linear-gradient(45deg, #050505 25%, transparent 25%, transparent 75%, #050505 75%, #050505),
                 linear-gradient(45deg, #050505 25%, transparent 25%, transparent 75%, #050505 75%, #050505);
             background-size: 10px 10px;
             background-position: 0 0, 5px 5px;
-            color: var(--text-color);
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -39,13 +43,14 @@
             position: relative;
         }
 
+        /* Overlay to soften the carbon fiber texture and give it depth, ensuring brand black is dominant */
         .overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at top center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
+            background: radial-gradient(circle at top center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.98) 100%);
             z-index: 0;
             pointer-events: none;
         }
@@ -55,6 +60,7 @@
             z-index: 1;
             width: 100%;
             max-width: 450px;
+            /* Mobile optimal */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -83,14 +89,14 @@
             width: 110px;
             height: 110px;
             border-radius: 50%;
-            background: var(--btn-bg);
+            background: linear-gradient(145deg, #1a1d24, #000000);
             display: flex;
             justify-content: center;
             align-items: center;
             box-shadow:
                 0 15px 35px rgba(0, 0, 0, 0.5),
-                0 0 0 4px var(--accent);
-            /* Borde de 4px con el color accent */
+                inset 0 1px 1px rgba(255, 255, 255, 0.05),
+                0 0 0 2px var(--accent-turquoise);
             margin-bottom: 1.25rem;
             position: relative;
             overflow: hidden;
@@ -101,9 +107,10 @@
             font-weight: 700;
             font-size: 1.25rem;
             letter-spacing: 2px;
-            color: var(--text-color);
+            color: var(--text-muted);
         }
 
+        /* For actual image placement later */
         .logo-placeholder img {
             width: 100%;
             height: 100%;
@@ -117,14 +124,13 @@
             font-size: 1.75rem;
             font-weight: 700;
             letter-spacing: 0.5px;
-            color: #ffffff;
-            /* Título principal siempre blanco para resaltar */
+            color: var(--text-main);
             margin-bottom: 0.25rem;
         }
 
         .brand-subtitle {
             font-size: 0.9rem;
-            color: var(--accent);
+            color: var(--accent-turquoise);
             font-weight: 500;
             letter-spacing: 1.5px;
             text-transform: uppercase;
@@ -145,12 +151,12 @@
             min-height: 64px;
             padding: 1rem 1.5rem;
             background: var(--btn-bg);
-            border: 4px solid transparent;
-            /* Inicialmente transparente para mantener tamaño */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 18px;
             text-decoration: none;
-            color: var(--text-color);
-            /* Usando el gris claro de los textos */
+            color: var(--text-main);
             font-weight: 600;
             font-size: 1.05rem;
             position: relative;
@@ -163,14 +169,14 @@
         .link-button:active {
             transform: translateY(-4px);
             background: var(--btn-hover);
-            border-color: var(--accent);
-            /* Borde de 4px del hover en color accent */
+            border-color: var(--accent-turquoise);
             box-shadow:
                 0 12px 25px rgba(0, 0, 0, 0.4),
-                0 0 15px rgba(0, 161, 155, 0.2);
+                0 0 15px var(--accent-turquoise-light);
             color: #ffffff;
         }
 
+        /* Subtle shine effect */
         .link-button::before {
             content: '';
             position: absolute;
@@ -187,17 +193,18 @@
             left: 150%;
         }
 
+        /* Generic link icon fallback (replaces specific SVGs since they are dynamic now) */
         .icon {
             width: 22px;
             height: 22px;
-            fill: var(--text-color);
+            fill: var(--text-muted);
             margin-right: 14px;
             flex-shrink: 0;
             transition: fill 0.3s ease;
         }
 
         .link-button:hover .icon {
-            fill: var(--accent);
+            fill: var(--accent-turquoise);
         }
 
         .link-content {
@@ -209,41 +216,36 @@
         }
 
         .link-title {
-            color: inherit;
+            color: var(--text-main);
+        }
+
+        .link-button:hover .link-title {
+            color: #ffffff;
         }
 
         .single-line-content {
             flex-grow: 0;
         }
 
-        .link-subtitle {
-            font-size: 0.8rem;
-            color: var(--text-color);
-            opacity: 0.7;
-            font-weight: 400;
-            margin-top: 3px;
-        }
-
         .footer {
             margin-top: 1rem;
             font-size: 0.8rem;
-            color: var(--text-color);
-            opacity: 0.5;
+            color: var(--text-muted);
+            opacity: 0.6;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
         }
 
-        /* Enlace sutil al login en el footer */
         .admin-link {
-            color: #231f20;
+            color: var(--btn-bg);
             text-decoration: none;
             transition: color 0.3s;
         }
 
         .admin-link:hover {
-            color: var(--accent);
+            color: var(--accent-turquoise);
         }
 
         .admin-link svg {
@@ -263,55 +265,17 @@
             <div class="logo-placeholder" id="logo-container">
                 <img id="logo-img" style="display: none;" src="" alt="Logo">
             </div>
-            <h1 class="brand-title" id="brand-title">MC Motors</h1>
-            <p class="brand-subtitle">Servicios Automotrices</p>
+            <h1 class="brand-title" id="page-title">MC Motors</h1>
+            <p class="brand-subtitle" id="page-subtitle">Servicios Automotrices</p>
         </header>
 
-        <!-- Link Buttons -->
-        <nav class="links-container">
-
-            <!-- WhatsApp -->
-            <a id="link-whatsapp"
-                href="https://wa.me/593980703270?text=¡Hola,%20MC%20Motors!%20🚗%20Vengo%20de%20su%20perfil.%20Me%20gustaría%20conocer%20qué%20servicios%20realizan%20y%20agendar%20una%20revisión%20para%20mi%20vehículo.%20¿Me%20podrían%20ayudar%20con%20la%20disponibilidad?"
-                target="_blank" rel="noopener noreferrer" class="link-button">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z" />
-                </svg>
-                <div class="link-content single-line-content">
-                    <span class="link-title">Agendar Cita</span>
-                </div>
-            </a>
-
-            <!-- Instagram -->
-            <a id="link-instagram" href="https://instagram.com/mcmotors" target="_blank" rel="noopener noreferrer"
-                class="link-button">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
-                </svg>
-                <div class="link-content single-line-content">
-                    <span class="link-title">Síguenos en Instagram (@mcmotors)</span>
-                </div>
-            </a>
-
-            <!-- Ubicación -->
-            <a id="link-ubicacion" href="https://maps.app.goo.gl/69d6rmpJYoe81Kmo9" target="_blank"
-                rel="noopener noreferrer" class="link-button">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M12 0C7.58 0 4 3.58 4 8c0 5.25 8 16 8 16s8-10.75 8-16c0-4.42-3.58-8-8-8zm0 11.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" />
-                </svg>
-                <div class="link-content">
-                    <span class="link-title">Nuestra Ubicación</span>
-                    <span id="text-ubicacion" class="link-subtitle">Calle Principal 123</span>
-                </div>
-            </a>
-
+        <!-- Contenedor Dinámico de Links -->
+        <nav class="links-container" id="dynamic-links-container">
+            <!-- Los botones serán inyectados por JavaScript aquí. -->
         </nav>
 
         <footer class="footer">
-            &copy; 2026 MC Motors
+            <span id="footer-text">&copy; 2026 MC Motors</span>
             <a href="login.html" class="admin-link" title="Admin">
                 <svg viewBox="0 0 24 24">
                     <path
@@ -321,27 +285,82 @@
         </footer>
     </div>
 
-    <!-- Script para inyectar datos del dashboard -->
+    <!-- Lógica de renderizado estricto del JSON a DOM -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const data = JSON.parse(localStorage.getItem('mc_motors_config') || '{}');
+            // Estructura por defecto si no hay JSON
+            const defaultData = {
+                titulo: "MC Motors",
+                subtitulo: "Servicios Automotrices",
+                estetica: { color: "#00a19b", foto: "" },
+                botones: [
+                    { texto: "Agendar Cita", url: "https://wa.me/593980703270?text=¡Hola,%20MC%20Motors!%20🚗%20Vengo%20de%20su%20perfil.%20Me%20gustaría%20conocer%20qué%20servicios%20realizan%20y%20agendar%20una%20revisión%20para%20mi%20vehículo.%20¿Me%20podrían%20ayudar%20con%20la%20disponibilidad?" },
+                    { texto: "Síguenos en Instagram (@mcmotors)", url: "https://instagram.com/mcmotors" },
+                    { texto: "Nuestra Ubicación", url: "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9" }
+                ]
+            };
 
-            if (data.accentColor) {
-                document.documentElement.style.setProperty('--accent', data.accentColor);
+            const savedData = localStorage.getItem('mc_motors_dynamic');
+            const data = savedData ? JSON.parse(savedData) : defaultData;
+
+            // 1. Inyectar Textos
+            document.getElementById('page-title').innerText = data.titulo || "MC Motors";
+            document.getElementById('page-subtitle').innerText = data.subtitulo || "Servicios Automotrices";
+            document.getElementById('footer-text').innerText = `© 2026 ${data.titulo || "MC Motors"}`;
+
+            // 2. Inyectar Estética Funcional
+            if (data.estetica) {
+                if (data.estetica.color) {
+                    document.documentElement.style.setProperty('--accent-turquoise', data.estetica.color);
+                    document.documentElement.style.setProperty('--accent-turquoise-hover', data.estetica.color);
+
+                    // Lightness math for hover shines
+                    try {
+                        const hex = data.estetica.color.replace('#', '');
+                        const r = parseInt(hex.substring(0, 2), 16);
+                        const g = parseInt(hex.substring(2, 4), 16);
+                        const b = parseInt(hex.substring(4, 6), 16);
+                        document.documentElement.style.setProperty('--accent-turquoise-light', `rgba(${r}, ${g}, ${b}, 0.15)`);
+                    } catch (e) { /* silent fail fallback */ }
+                }
+
+                if (data.estetica.foto) {
+                    const img = document.getElementById('logo-img');
+                    img.src = data.estetica.foto;
+                    img.style.display = 'block';
+                }
             }
-            if (data.logoUrl) {
-                const img = document.getElementById('logo-img');
-                img.src = data.logoUrl;
-                img.style.display = 'block';
-            }
-            if (data.whatsappUrl) {
-                document.getElementById('link-whatsapp').href = data.whatsappUrl;
-            }
-            if (data.instagramUrl) {
-                document.getElementById('link-instagram').href = data.instagramUrl;
-            }
-            if (data.ubicacionUrl) {
-                document.getElementById('link-ubicacion').href = data.ubicacionUrl;
+
+            // 3. Reconstruir Botones Dinámicamente
+            const container = document.getElementById('dynamic-links-container');
+            container.innerHTML = ''; // Limpieza total del contenedor
+
+            // Generic Arrow Icon SVG definition since icons are no longer hardcoded
+            const genericIconSVG = `
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" opacity="0"/>
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            `;
+
+            if (data.botones && Array.isArray(data.botones)) {
+                data.botones.forEach(btn => {
+                    if (!btn.texto || !btn.url) return; // skip empties
+
+                    const a = document.createElement('a');
+                    a.href = btn.url;
+                    a.target = "_blank";
+                    a.rel = "noopener noreferrer";
+                    a.className = "link-button";
+
+                    a.innerHTML = `
+                        ${genericIconSVG}
+                        <div class="link-content single-line-content">
+                            <span class="link-title">${btn.texto}</span>
+                        </div>
+                    `;
+                    container.appendChild(a);
+                });
             }
         });
     </script>

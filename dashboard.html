@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MC Motors | Panel de Control</title>
+    <title>MC Motors | Panel de Control Dinámico</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -55,8 +55,24 @@
             text-decoration: underline;
         }
 
-        .form-group {
+        .section {
+            background: var(--btn-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
             margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section h2 {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--btn-hover);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
         }
 
         label {
@@ -73,7 +89,7 @@
             padding: 10px;
             border-radius: 6px;
             border: 1px solid var(--btn-hover);
-            background: var(--btn-bg);
+            background: var(--bg-color);
             color: white;
             outline: none;
             font-size: 0.9rem;
@@ -109,6 +125,52 @@
             border-radius: 6px;
         }
 
+        /* Botones dinámicos */
+        #botones-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .btn-card {
+            background: var(--bg-color);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--btn-hover);
+            position: relative;
+        }
+
+        .btn-card .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .add-btn {
+            background: var(--btn-hover);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+
+        .add-btn:hover {
+            background: var(--accent);
+        }
+
         .actions {
             margin-top: 2rem;
             display: flex;
@@ -124,9 +186,14 @@
             font-weight: 600;
             cursor: pointer;
             flex: 1;
+            transition: opacity 0.3s;
         }
 
-        button.back-btn {
+        button.save-btn:hover {
+            opacity: 0.9;
+        }
+
+        a.back-btn {
             background: var(--btn-hover);
             color: white;
             padding: 12px 24px;
@@ -151,6 +218,7 @@
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -163,32 +231,42 @@
         </div>
 
         <form id="dashboard-form">
-            <div class="form-group">
-                <label>URL de Foto de Perfil / Logo</label>
-                <input type="url" id="logoUrl" placeholder="https://ejemplo.com/logo.jpg">
-            </div>
-
-            <div class="form-group">
-                <label>Color de Acento (Bordes y Hover)</label>
-                <div class="color-picker">
-                    <input type="color" id="accentColor" value="#00a19b">
-                    <span id="color-hex">#00a19b</span>
+            <!-- Sección Textos Principales -->
+            <div class="section">
+                <h2>Textos Principales</h2>
+                <div class="form-group">
+                    <label>Título Principal</label>
+                    <input type="text" id="mainTitle" value="MC Motors" required>
+                </div>
+                <div class="form-group">
+                    <label>Subtítulo / Eslogan</label>
+                    <input type="text" id="mainSubtitle" value="Servicios Automotrices" required>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Enlace de WhatsApp</label>
-                <input type="url" id="whatsappUrl" placeholder="https://wa.me/..." required>
+            <!-- Sección Estética -->
+            <div class="section">
+                <h2>Diseño y Estética</h2>
+                <div class="form-group">
+                    <label>URL de Foto de Perfil / Logo</label>
+                    <input type="url" id="logoUrl" placeholder="https://ejemplo.com/logo.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Color de Acento (Bordes e interacciones)</label>
+                    <div class="color-picker">
+                        <input type="color" id="accentColor" value="#00a19b">
+                        <span id="color-hex">#00a19b</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Enlace de Instagram</label>
-                <input type="url" id="instagramUrl" placeholder="https://instagram.com/..." required>
-            </div>
-
-            <div class="form-group">
-                <label>Enlace de Ubicación (Google Maps)</label>
-                <input type="url" id="ubicacionUrl" placeholder="https://maps.app.goo.gl/..." required>
+            <!-- Sección Gestión de Botones -->
+            <div class="section">
+                <h2>Gestión de Enlaces</h2>
+                <div id="botones-container">
+                    <!-- Los botones se generarán aquí con JS -->
+                </div>
+                <button type="button" class="add-btn" onclick="agregarBoton()">+ Añadir Nuevo Enlace</button>
             </div>
 
             <div class="actions">
@@ -198,57 +276,114 @@
         </form>
     </div>
 
-    <div id="toast" class="toast">Guardado correctamente</div>
+    <div id="toast" class="toast">¡Cambios guardados con éxito!</div>
 
     <script>
         // Check Auth
-        if (sessionStorage.getItem('is_admin') !== 'true') {
-            window.location.href = 'login.html';
-        }
+        if (sessionStorage.getItem('is_admin') !== 'true') { window.location.href = 'login.html'; }
 
         // Live hex update
         const colorInput = document.getElementById('accentColor');
         const colorHex = document.getElementById('color-hex');
-        colorInput.addEventListener('input', (e) => {
-            colorHex.textContent = e.target.value;
-        });
+        colorInput.addEventListener('input', (e) => { colorHex.textContent = e.target.value; });
 
-        // Load existing data
+        // Default Data Structure
+        const defaultData = {
+            titulo: "MC Motors",
+            subtitulo: "Servicios Automotrices",
+            estetica: {
+                color: "#00a19b",
+                foto: ""
+            },
+            botones: [
+                { id: "btn-1", texto: "Agendar Cita", url: "https://wa.me/593980703270?text=¡Hola,%20MC%20Motors!..." },
+                { id: "btn-2", texto: "Síguenos en Instagram (@mcmotors)", url: "https://instagram.com/mcmotors" },
+                { id: "btn-3", texto: "Nuestra Ubicación", url: "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9" }
+            ]
+        };
+
+        // Initialize form
         document.addEventListener('DOMContentLoaded', () => {
-            const data = JSON.parse(localStorage.getItem('mc_motors_config') || '{}');
+            const data = JSON.parse(localStorage.getItem('mc_motors_dynamic') || JSON.stringify(defaultData));
 
-            if (data.logoUrl) document.getElementById('logoUrl').value = data.logoUrl;
-            if (data.accentColor) {
-                document.getElementById('accentColor').value = data.accentColor;
-                colorHex.textContent = data.accentColor;
+            // Textos
+            document.getElementById('mainTitle').value = data.titulo || "";
+            document.getElementById('mainSubtitle').value = data.subtitulo || "";
+
+            // Estética
+            if (data.estetica) {
+                document.getElementById('logoUrl').value = data.estetica.foto || "";
+                document.getElementById('accentColor').value = data.estetica.color || "#00a19b";
+                colorHex.textContent = data.estetica.color || "#00a19b";
             }
-            if (data.whatsappUrl) document.getElementById('whatsappUrl').value = data.whatsappUrl;
-            else document.getElementById('whatsappUrl').value = "https://wa.me/593980703270?text=¡Hola,%20MC%20Motors!%20🚗%20Vengo%20de%20su%20perfil.%20Me%20gustaría%20conocer%20qué%20servicios%20realizan%20y%20agendar%20una%20revisión%20para%20mi%20vehículo.%20¿Me%20podrían%20ayudar%20con%20la%20disponibilidad?";
 
-            if (data.instagramUrl) document.getElementById('instagramUrl').value = data.instagramUrl;
-            else document.getElementById('instagramUrl').value = "https://instagram.com/mcmotors";
-
-            if (data.ubicacionUrl) document.getElementById('ubicacionUrl').value = data.ubicacionUrl;
-            else document.getElementById('ubicacionUrl').value = "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9";
+            // Botones
+            if (data.botones && Array.isArray(data.botones)) {
+                data.botones.forEach(btn => agregarBotonDOM(btn.id, btn.texto, btn.url));
+            } else {
+                defaultData.botones.forEach(btn => agregarBotonDOM(btn.id, btn.texto, btn.url));
+            }
         });
 
-        // Save data
+        // Add Button Functionality
+        const botonesContainer = document.getElementById('botones-container');
+
+        function agregarBoton() {
+            const tempId = 'btn-' + Date.now();
+            agregarBotonDOM(tempId, "Nuevo Enlace", "");
+        }
+
+        function agregarBotonDOM(id, texto, url) {
+            const card = document.createElement('div');
+            card.className = 'btn-card';
+            card.dataset.id = id;
+
+            card.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Eliminar</button>
+                <div class="form-group">
+                    <label>Texto a mostrar</label>
+                    <input type="text" class="btn-text-input" value="${texto}" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>URL de destino</label>
+                    <input type="url" class="btn-url-input" value="${url}" placeholder="https://..." required>
+                </div>
+            `;
+            botonesContainer.appendChild(card);
+        }
+
+        // Save Functionality
         document.getElementById('dashboard-form').addEventListener('submit', (e) => {
             e.preventDefault();
 
+            // Recopilar botones dinámicos
+            const botonesArray = [];
+            document.querySelectorAll('.btn-card').forEach(card => {
+                botonesArray.push({
+                    id: card.dataset.id,
+                    texto: card.querySelector('.btn-text-input').value,
+                    url: card.querySelector('.btn-url-input').value
+                });
+            });
+
+            // Objeto principal de datos
             const configData = {
-                logoUrl: document.getElementById('logoUrl').value,
-                accentColor: document.getElementById('accentColor').value,
-                whatsappUrl: document.getElementById('whatsappUrl').value,
-                instagramUrl: document.getElementById('instagramUrl').value,
-                ubicacionUrl: document.getElementById('ubicacionUrl').value
+                titulo: document.getElementById('mainTitle').value,
+                subtitulo: document.getElementById('mainSubtitle').value,
+                estetica: {
+                    color: document.getElementById('accentColor').value,
+                    foto: document.getElementById('logoUrl').value
+                },
+                botones: botonesArray
             };
 
-            localStorage.setItem('mc_motors_config', JSON.stringify(configData));
+            // Persistir en localStorage
+            localStorage.setItem('mc_motors_dynamic', JSON.stringify(configData));
 
+            // UI Feedback
             const toast = document.getElementById('toast');
             toast.style.opacity = 1;
-            setTimeout(() => { toast.style.opacity = 0; }, 2000);
+            setTimeout(() => { toast.style.opacity = 0; }, 2500);
         });
 
         function logout() {
