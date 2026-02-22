@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MC Motors | Panel de Control Dinámico</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-color: #000000;
@@ -125,6 +126,60 @@
             border-radius: 6px;
         }
 
+        /* Contenedores Flex (Para agrupar campos con sliders) */
+        .flex-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .flex-1 {
+            flex: 1;
+        }
+
+        /* Sliders / Range Inputs style */
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .range-value {
+            background: var(--bg-color);
+            border: 1px solid var(--btn-hover);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            min-width: 48px;
+            text-align: center;
+        }
+
+        /* Redes Sociales Grid */
+        .social-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .social-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .social-input-group i {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            width: 30px;
+            text-align: center;
+        }
+
         /* Botones dinámicos */
         #botones-container {
             display: flex;
@@ -231,16 +286,38 @@
         </div>
 
         <form id="dashboard-form">
-            <!-- Sección Textos Principales -->
+            <!-- Sección Textos Principales y Tamaños -->
             <div class="section">
-                <h2>Textos Principales</h2>
-                <div class="form-group">
-                    <label>Título Principal</label>
-                    <input type="text" id="mainTitle" value="MC Motors" required>
+                <h2>Textos y Tipografía Base</h2>
+
+                <div class="form-group flex-row">
+                    <div class="flex-1">
+                        <label>Título Principal</label>
+                        <input type="text" id="mainTitle" required>
+                    </div>
+                    <div style="width: 140px;">
+                        <label>Tamaño (px)</label>
+                        <div class="range-container">
+                            <input type="range" id="titleSize" min="16" max="42" value="28"
+                                oninput="updateRangeLabel('titleSizeVal', this.value)">
+                            <span class="range-value" id="titleSizeVal">28px</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Subtítulo / Eslogan</label>
-                    <input type="text" id="mainSubtitle" value="Servicios Automotrices" required>
+
+                <div class="form-group flex-row">
+                    <div class="flex-1">
+                        <label>Subtítulo / Eslogan</label>
+                        <input type="text" id="mainSubtitle" required>
+                    </div>
+                    <div style="width: 140px;">
+                        <label>Tamaño (px)</label>
+                        <div class="range-container">
+                            <input type="range" id="subSize" min="10" max="24" value="14"
+                                oninput="updateRangeLabel('subSizeVal', this.value)">
+                            <span class="range-value" id="subSizeVal">14px</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -254,18 +331,68 @@
                 <div class="form-group">
                     <label>Color de Acento (Bordes e interacciones)</label>
                     <div class="color-picker">
-                        <input type="color" id="accentColor" value="#00a19b">
+                        <input type="color" id="accentColor">
                         <span id="color-hex">#00a19b</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Sección Gestión de Botones -->
+            <!-- Sección Redes Sociales -->
             <div class="section">
-                <h2>Gestión de Enlaces</h2>
-                <div id="botones-container">
-                    <!-- Los botones se generarán aquí con JS -->
+                <h2>Redes Sociales (Iconos horizontales)</h2>
+
+                <div class="form-group" style="max-width: 250px;">
+                    <label>Tamaño de Iconos (px)</label>
+                    <div class="range-container">
+                        <input type="range" id="iconSize" min="16" max="42" value="24"
+                            oninput="updateRangeLabel('iconSizeVal', this.value)">
+                        <span class="range-value" id="iconSizeVal">24px</span>
+                    </div>
                 </div>
+
+                <div class="social-grid">
+                    <div class="social-input-group">
+                        <i class="fa-brands fa-instagram"></i>
+                        <input type="url" id="igUrl" placeholder="URL Instagram">
+                    </div>
+                    <div class="social-input-group">
+                        <i class="fa-brands fa-facebook-f"></i>
+                        <input type="url" id="fbUrl" placeholder="URL Facebook">
+                    </div>
+                    <div class="social-input-group">
+                        <i class="fa-brands fa-tiktok"></i>
+                        <input type="url" id="tkUrl" placeholder="URL TikTok">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Currículum / Perfil Destacado -->
+            <div class="section">
+                <h2>Perfil Profesional / Currículum</h2>
+                <div class="form-group">
+                    <label>Texto del botón</label>
+                    <input type="text" id="cvText" placeholder="Ej: Perfil Profesional">
+                </div>
+                <div class="form-group">
+                    <label>URL del PDF o Enlace externo</label>
+                    <input type="url" id="cvUrl" placeholder="Dejar vacío para ocultar botón">
+                </div>
+            </div>
+
+            <!-- Sección Gestión de Botones Genericos -->
+            <div class="section">
+                <h2>Otros Enlaces (Verticales)</h2>
+
+                <div class="form-group" style="max-width: 250px;">
+                    <label>Tamaño Texto de Botones (px)</label>
+                    <div class="range-container">
+                        <input type="range" id="btnSize" min="12" max="24" value="16"
+                            oninput="updateRangeLabel('btnSizeVal', this.value)">
+                        <span class="range-value" id="btnSizeVal">16px</span>
+                    </div>
+                </div>
+
+                <div id="botones-container"></div>
                 <button type="button" class="add-btn" onclick="agregarBoton()">+ Añadir Nuevo Enlace</button>
             </div>
 
@@ -282,33 +409,57 @@
         // Check Auth
         if (sessionStorage.getItem('is_admin') !== 'true') { window.location.href = 'login.html'; }
 
-        // Live hex update
+        // Utils
+        function updateRangeLabel(id, val) { document.getElementById(id).textContent = val + 'px'; }
+
         const colorInput = document.getElementById('accentColor');
         const colorHex = document.getElementById('color-hex');
         colorInput.addEventListener('input', (e) => { colorHex.textContent = e.target.value; });
 
-        // Default Data Structure
+        // Default Data Structure v2 (Con tamaños)
         const defaultData = {
             titulo: "MC Motors",
             subtitulo: "Servicios Automotrices",
-            estetica: {
-                color: "#00a19b",
-                foto: ""
-            },
+            tamanos: { tituloSize: 28, subtituloSize: 14, btnSize: 16, iconSize: 24 },
+            estetica: { color: "#00a19b", foto: "" },
+            sociales: [
+                { red: "instagram", url: "https://instagram.com/mcmotors", icono: "fa-brands fa-instagram" },
+                { red: "facebook", url: "", icono: "fa-brands fa-facebook-f" },
+                { red: "tiktok", url: "", icono: "fa-brands fa-tiktok" }
+            ],
+            curriculum: { texto: "Perfil Profesional", url: "" },
             botones: [
-                { id: "btn-1", texto: "Agendar Cita", url: "https://wa.me/593980703270?text=¡Hola,%20MC%20Motors!..." },
-                { id: "btn-2", texto: "Síguenos en Instagram (@mcmotors)", url: "https://instagram.com/mcmotors" },
-                { id: "btn-3", texto: "Nuestra Ubicación", url: "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9" }
+                { id: "btn-1", texto: "Agendar Cita", url: "https://wa.me/593980703270", icono: "fa-brands fa-whatsapp" },
+                { id: "btn-2", texto: "Nuestra Ubicación", url: "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9", icono: "fa-solid fa-location-dot" }
             ]
         };
 
         // Initialize form
         document.addEventListener('DOMContentLoaded', () => {
-            const data = JSON.parse(localStorage.getItem('mc_motors_dynamic') || JSON.stringify(defaultData));
+            let data = null;
+            try {
+                const stored = localStorage.getItem('mc_motors_dynamic_v2');
+                if (stored) data = JSON.parse(stored);
+            } catch (e) { }
 
-            // Textos
-            document.getElementById('mainTitle').value = data.titulo || "";
+            if (!data) { data = defaultData; }
+            if (!data.tamanos) { data.tamanos = defaultData.tamanos; }
+
+            // Textos y Tamaños
+            const titleInput = document.getElementById('mainTitle');
+            titleInput.value = data.titulo || "";
+            document.getElementById('titleSize').value = data.tamanos.tituloSize;
+            updateRangeLabel('titleSizeVal', data.tamanos.tituloSize);
+
             document.getElementById('mainSubtitle').value = data.subtitulo || "";
+            document.getElementById('subSize').value = data.tamanos.subtituloSize;
+            updateRangeLabel('subSizeVal', data.tamanos.subtituloSize);
+
+            document.getElementById('btnSize').value = data.tamanos.btnSize;
+            updateRangeLabel('btnSizeVal', data.tamanos.btnSize);
+
+            document.getElementById('iconSize').value = data.tamanos.iconSize;
+            updateRangeLabel('iconSizeVal', data.tamanos.iconSize);
 
             // Estética
             if (data.estetica) {
@@ -317,26 +468,37 @@
                 colorHex.textContent = data.estetica.color || "#00a19b";
             }
 
-            // Botones
+            // Redes
+            if (data.sociales) {
+                data.sociales.forEach(s => {
+                    if (s.red === 'instagram') document.getElementById('igUrl').value = s.url || "";
+                    if (s.red === 'facebook') document.getElementById('fbUrl').value = s.url || "";
+                    if (s.red === 'tiktok') document.getElementById('tkUrl').value = s.url || "";
+                });
+            }
+
+            // CV
+            if (data.curriculum) {
+                document.getElementById('cvText').value = data.curriculum.texto || "";
+                document.getElementById('cvUrl').value = data.curriculum.url || "";
+            }
+
+            // Botones iterables
             if (data.botones && Array.isArray(data.botones)) {
-                data.botones.forEach(btn => agregarBotonDOM(btn.id, btn.texto, btn.url));
+                data.botones.forEach(btn => agregarBotonDOM(btn.id || 'btn-' + Math.random(), btn.texto, btn.url, btn.icono));
             } else {
-                defaultData.botones.forEach(btn => agregarBotonDOM(btn.id, btn.texto, btn.url));
+                defaultData.botones.forEach(btn => agregarBotonDOM(btn.id, btn.texto, btn.url, btn.icono));
             }
         });
 
-        // Add Button Functionality
         const botonesContainer = document.getElementById('botones-container');
+        function agregarBoton() { agregarBotonDOM('btn-' + Date.now(), "Nuevo Enlace", "", "fa-solid fa-link"); }
 
-        function agregarBoton() {
-            const tempId = 'btn-' + Date.now();
-            agregarBotonDOM(tempId, "Nuevo Enlace", "");
-        }
-
-        function agregarBotonDOM(id, texto, url) {
+        function agregarBotonDOM(id, texto, url, icono) {
             const card = document.createElement('div');
             card.className = 'btn-card';
             card.dataset.id = id;
+            card.dataset.icono = icono || 'fa-solid fa-link';
 
             card.innerHTML = `
                 <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Eliminar</button>
@@ -356,40 +518,51 @@
         document.getElementById('dashboard-form').addEventListener('submit', (e) => {
             e.preventDefault();
 
-            // Recopilar botones dinámicos
             const botonesArray = [];
             document.querySelectorAll('.btn-card').forEach(card => {
                 botonesArray.push({
                     id: card.dataset.id,
+                    icono: card.dataset.icono,
                     texto: card.querySelector('.btn-text-input').value,
                     url: card.querySelector('.btn-url-input').value
                 });
             });
 
-            // Objeto principal de datos
+            const socialesArray = [
+                { red: "instagram", url: document.getElementById('igUrl').value, icono: "fa-brands fa-instagram" },
+                { red: "facebook", url: document.getElementById('fbUrl').value, icono: "fa-brands fa-facebook-f" },
+                { red: "tiktok", url: document.getElementById('tkUrl').value, icono: "fa-brands fa-tiktok" }
+            ];
+
             const configData = {
                 titulo: document.getElementById('mainTitle').value,
                 subtitulo: document.getElementById('mainSubtitle').value,
+                tamanos: {
+                    tituloSize: parseInt(document.getElementById('titleSize').value),
+                    subtituloSize: parseInt(document.getElementById('subSize').value),
+                    btnSize: parseInt(document.getElementById('btnSize').value),
+                    iconSize: parseInt(document.getElementById('iconSize').value)
+                },
                 estetica: {
                     color: document.getElementById('accentColor').value,
                     foto: document.getElementById('logoUrl').value
                 },
+                sociales: socialesArray,
+                curriculum: {
+                    texto: document.getElementById('cvText').value,
+                    url: document.getElementById('cvUrl').value
+                },
                 botones: botonesArray
             };
 
-            // Persistir en localStorage
-            localStorage.setItem('mc_motors_dynamic', JSON.stringify(configData));
+            localStorage.setItem('mc_motors_dynamic_v2', JSON.stringify(configData));
 
-            // UI Feedback
             const toast = document.getElementById('toast');
             toast.style.opacity = 1;
             setTimeout(() => { toast.style.opacity = 0; }, 2500);
         });
 
-        function logout() {
-            sessionStorage.removeItem('is_admin');
-            window.location.href = 'index.html';
-        }
+        function logout() { sessionStorage.removeItem('is_admin'); window.location.href = 'index.html'; }
     </script>
 </body>
 

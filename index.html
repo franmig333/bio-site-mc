@@ -7,6 +7,8 @@
     <title>MC Motors | Links</title>
     <!-- Use a modern sans-serif font -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome para iconos de redes y estándar -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --dark-bg: #000000;
@@ -64,7 +66,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2rem;
+            gap: 1.5rem;
             animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
             transform: translateY(20px);
@@ -121,19 +123,78 @@
         }
 
         .brand-title {
-            font-size: 1.75rem;
+            /* font-size inline now */
             font-weight: 700;
             letter-spacing: 0.5px;
             color: var(--text-main);
             margin-bottom: 0.25rem;
+            transition: font-size 0.3s ease;
         }
 
         .brand-subtitle {
-            font-size: 0.9rem;
+            /* font-size inline now */
             color: var(--accent-turquoise);
             font-weight: 500;
             letter-spacing: 1.5px;
             text-transform: uppercase;
+            transition: font-size 0.3s ease;
+        }
+
+        /* Redes Sociales Fila */
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+
+        .social-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            border: 2px solid transparent;
+            color: var(--text-main);
+            /* font-size inline now (via i tag) */
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .social-icon:hover,
+        .social-icon:active {
+            background: var(--btn-hover);
+            border-color: var(--accent-turquoise);
+            color: #ffffff;
+            transform: translateY(-4px);
+            box-shadow:
+                0 8px 15px rgba(0, 0, 0, 0.4),
+                0 0 12px var(--accent-turquoise-light);
+        }
+
+        .social-icon i {
+            transition: font-size 0.3s ease;
+        }
+
+        .social-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
+            border-radius: 50%;
+        }
+
+        .social-icon:hover::before {
+            left: 150%;
         }
 
         .links-container {
@@ -158,7 +219,7 @@
             text-decoration: none;
             color: var(--text-main);
             font-weight: 600;
-            font-size: 1.05rem;
+            /* font-size inline now */
             position: relative;
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -176,7 +237,6 @@
             color: #ffffff;
         }
 
-        /* Subtle shine effect */
         .link-button::before {
             content: '';
             position: absolute;
@@ -193,18 +253,16 @@
             left: 150%;
         }
 
-        /* Generic link icon fallback (replaces specific SVGs since they are dynamic now) */
         .icon {
-            width: 22px;
-            height: 22px;
-            fill: var(--text-muted);
+            /* font-size scalable but generally relates to btn size */
+            color: var(--text-muted);
             margin-right: 14px;
             flex-shrink: 0;
-            transition: fill 0.3s ease;
+            transition: color 0.3s ease;
         }
 
         .link-button:hover .icon {
-            fill: var(--accent-turquoise);
+            color: var(--accent-turquoise);
         }
 
         .link-content {
@@ -269,7 +327,12 @@
             <p class="brand-subtitle" id="page-subtitle">Servicios Automotrices</p>
         </header>
 
-        <!-- Contenedor Dinámico de Links -->
+        <!-- Contenedor Dinámico de Redes Sociales (Fila) -->
+        <div class="social-row" id="dynamic-social-row">
+            <!-- Iconos sociales generados por JS -->
+        </div>
+
+        <!-- Contenedor Dinámico de Curriculum y Botones -->
         <nav class="links-container" id="dynamic-links-container">
             <!-- Los botones serán inyectados por JavaScript aquí. -->
         </nav>
@@ -288,42 +351,65 @@
     <!-- Lógica de renderizado estricto del JSON a DOM -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Estructura por defecto si no hay JSON
+            // Estructura por defecto
             const defaultData = {
                 titulo: "MC Motors",
                 subtitulo: "Servicios Automotrices",
+                tamanos: {
+                    tituloSize: 28,
+                    subtituloSize: 14,
+                    btnSize: 16,
+                    iconSize: 24
+                },
                 estetica: { color: "#00a19b", foto: "" },
+                sociales: [
+                    { red: "instagram", url: "https://instagram.com/mcmotors", icono: "fa-brands fa-instagram" },
+                    { red: "facebook", url: "https://facebook.com/mcmotors", icono: "fa-brands fa-facebook-f" },
+                    { red: "tiktok", url: "https://tiktok.com/@mcmotors", icono: "fa-brands fa-tiktok" }
+                ],
+                curriculum: { texto: "Perfil Profesional", url: "#" },
                 botones: [
-                    { texto: "Agendar Cita", url: "https://wa.me/593980703270?text=¡Hola,%20MC%20Motors!%20🚗%20Vengo%20de%20su%20perfil.%20Me%20gustaría%20conocer%20qué%20servicios%20realizan%20y%20agendar%20una%20revisión%20para%20mi%20vehículo.%20¿Me%20podrían%20ayudar%20con%20la%20disponibilidad?" },
-                    { texto: "Síguenos en Instagram (@mcmotors)", url: "https://instagram.com/mcmotors" },
-                    { texto: "Nuestra Ubicación", url: "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9" }
+                    { texto: "Agendar Cita", url: "https://wa.me/593980703270", icono: "fa-solid fa-calendar-check" },
+                    { texto: "Nuestra Ubicación", url: "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9", icono: "fa-solid fa-location-dot" }
                 ]
             };
 
-            const savedData = localStorage.getItem('mc_motors_dynamic');
-            const data = savedData ? JSON.parse(savedData) : defaultData;
+            const savedData = localStorage.getItem('mc_motors_dynamic_v2');
+            let data = defaultData;
 
-            // 1. Inyectar Textos
-            document.getElementById('page-title').innerText = data.titulo || "MC Motors";
-            document.getElementById('page-subtitle').innerText = data.subtitulo || "Servicios Automotrices";
+            if (savedData) {
+                try {
+                    data = JSON.parse(savedData);
+                    // Ensure tamanos exists for older saves
+                    if (!data.tamanos) data.tamanos = defaultData.tamanos;
+                } catch (e) { }
+            }
+
+            // 1. Textos y Tamaños Inline
+            const titleEl = document.getElementById('page-title');
+            const subtitleEl = document.getElementById('page-subtitle');
+
+            titleEl.innerText = data.titulo || "MC Motors";
+            subtitleEl.innerText = data.subtitulo || "Servicios Automotrices";
+
+            titleEl.style.fontSize = `${data.tamanos.tituloSize}px`;
+            subtitleEl.style.fontSize = `${data.tamanos.subtituloSize}px`;
+
             document.getElementById('footer-text').innerText = `© 2026 ${data.titulo || "MC Motors"}`;
 
-            // 2. Inyectar Estética Funcional
+            // 2. Estética
             if (data.estetica) {
                 if (data.estetica.color) {
                     document.documentElement.style.setProperty('--accent-turquoise', data.estetica.color);
                     document.documentElement.style.setProperty('--accent-turquoise-hover', data.estetica.color);
-
-                    // Lightness math for hover shines
                     try {
                         const hex = data.estetica.color.replace('#', '');
                         const r = parseInt(hex.substring(0, 2), 16);
                         const g = parseInt(hex.substring(2, 4), 16);
                         const b = parseInt(hex.substring(4, 6), 16);
                         document.documentElement.style.setProperty('--accent-turquoise-light', `rgba(${r}, ${g}, ${b}, 0.15)`);
-                    } catch (e) { /* silent fail fallback */ }
+                    } catch (e) { }
                 }
-
                 if (data.estetica.foto) {
                     const img = document.getElementById('logo-img');
                     img.src = data.estetica.foto;
@@ -331,30 +417,59 @@
                 }
             }
 
-            // 3. Reconstruir Botones Dinámicamente
+            // 3. Redes Sociales
+            const socialRow = document.getElementById('dynamic-social-row');
+            socialRow.innerHTML = '';
+            if (data.sociales && Array.isArray(data.sociales)) {
+                data.sociales.forEach(red => {
+                    if (!red.url) return;
+                    const a = document.createElement('a');
+                    a.href = red.url;
+                    a.target = "_blank";
+                    a.rel = "noopener noreferrer";
+                    a.className = "social-icon";
+                    // Aplicar tamaño a fontawesome icon inside
+                    a.innerHTML = `<i class="${red.icono}" style="font-size: ${data.tamanos.iconSize}px;"></i>`;
+                    socialRow.appendChild(a);
+                });
+            }
+
+            // 4. Botones
             const container = document.getElementById('dynamic-links-container');
-            container.innerHTML = ''; // Limpieza total del contenedor
+            container.innerHTML = '';
 
-            // Generic Arrow Icon SVG definition since icons are no longer hardcoded
-            const genericIconSVG = `
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" opacity="0"/>
-                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                </svg>
-            `;
+            // Resume
+            if (data.curriculum && data.curriculum.url && data.curriculum.url !== "#" && data.curriculum.url !== "") {
+                const cvA = document.createElement('a');
+                cvA.href = data.curriculum.url;
+                cvA.target = "_blank";
+                cvA.rel = "noopener noreferrer";
+                cvA.className = "link-button";
+                cvA.style.fontSize = `${data.tamanos.btnSize}px`;
+                cvA.innerHTML = `
+                    <i class="fa-solid fa-file-pdf icon" style="font-size: ${data.tamanos.btnSize * 1.2}px;"></i>
+                    <div class="link-content single-line-content">
+                        <span class="link-title">${data.curriculum.texto || 'Perfil Profesional'}</span>
+                    </div>
+                `;
+                container.appendChild(cvA);
+            }
 
+            // Normales
             if (data.botones && Array.isArray(data.botones)) {
                 data.botones.forEach(btn => {
-                    if (!btn.texto || !btn.url) return; // skip empties
+                    if (!btn.texto || !btn.url) return;
 
                     const a = document.createElement('a');
                     a.href = btn.url;
                     a.target = "_blank";
                     a.rel = "noopener noreferrer";
                     a.className = "link-button";
+                    a.style.fontSize = `${data.tamanos.btnSize}px`;
 
+                    const iconClass = btn.icono ? btn.icono : "fa-solid fa-arrow-up-right-from-square";
                     a.innerHTML = `
-                        ${genericIconSVG}
+                        <i class="${iconClass} icon" style="font-size: ${data.tamanos.btnSize * 1.2}px;"></i>
                         <div class="link-content single-line-content">
                             <span class="link-title">${btn.texto}</span>
                         </div>
