@@ -416,7 +416,7 @@
         }
 
         // Lógica de Renderizado del JSON
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const defaultData = {
                 titulo: "MC Motors",
                 subtitulo: "Servicios Automotrices",
@@ -434,17 +434,21 @@
                 ]
             };
 
-            const savedData = localStorage.getItem('mc_motors_dynamic_v3'); // v3 bump for breaking file changes
             let data = null;
-
-            if (savedData) {
-                try { data = JSON.parse(savedData); } catch (e) { }
+            try {
+                // Agregar un timestamp para evitar cachear la respuesta cuando cambie la data
+                const response = await fetch('data.json?t=' + new Date().getTime());
+                if (response.ok) {
+                    data = await response.json();
+                } else {
+                    console.error("Error al cargar data.json:", response.status);
+                }
+            } catch (e) {
+                console.error("Excepción al cargar data.json:", e);
             }
+
             if (!data) {
-                // Fallback a v2 si existe
-                const v2 = localStorage.getItem('mc_motors_dynamic_v2');
-                if (v2) { try { data = JSON.parse(v2); } catch (e) { data = defaultData; } }
-                else { data = defaultData; }
+                data = defaultData;
             }
             if (!data.tamanos) { data.tamanos = defaultData.tamanos; }
 

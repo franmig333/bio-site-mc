@@ -310,6 +310,27 @@
         </div>
 
         <form id="dashboard-form">
+            <!-- Sección Configuración Servidor -->
+            <div class="section" id="server-config-section">
+                <h2>Configuración de Servidor (GitHub)</h2>
+                <div class="form-group flex-row">
+                    <div class="flex-1">
+                        <label>GitHub Username</label>
+                        <input type="text" id="githubOwner" placeholder="Ej: franmig333" required>
+                    </div>
+                    <div class="flex-1">
+                        <label>Nombre del Repositorio</label>
+                        <input type="text" id="githubRepo" placeholder="Ej: bio-site-mc" required>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label>GitHub Personal Token</label>
+                    <input type="password" id="githubToken" placeholder="ghp_..."
+                        style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--btn-hover); background: var(--bg-color); color: white; outline: none; font-size: 0.9rem;"
+                        required>
+                </div>
+            </div>
+
             <!-- Sección Textos Principales y Tamaños -->
             <div class="section">
                 <h2>Textos y Tipografía Base</h2>
@@ -458,7 +479,7 @@
     <div id="loading-overlay">
         <i class="fa-solid fa-circle-notch fa-spin"
             style="font-size: 3rem; margin-bottom: 1rem; color:var(--accent);"></i>
-        <div>Procesando y guardando archivos...</div>
+        <div>Guardando y reconstruyendo sitio...</div>
     </div>
 
     <script>
@@ -510,9 +531,23 @@
         };
 
         // DOM Initializer
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cargar configuración de servidor
+            document.getElementById('githubOwner').value = localStorage.getItem('mc_github_owner') || '';
+            document.getElementById('githubRepo').value = localStorage.getItem('mc_github_repo') || '';
+            document.getElementById('githubToken').value = localStorage.getItem('mc_github_token') || '';
+
             let data = null;
-            try { const stored = localStorage.getItem('mc_motors_dynamic_v3'); if (stored) data = JSON.parse(stored); } catch (e) { }
+            try {
+                const response = await fetch('data.json?t=' + new Date().getTime());
+                if (response.ok) {
+                    data = await response.json();
+                }
+            } catch (e) { console.error('Error fetching data.json', e); }
+
+            if (!data) {
+                try { const stored = localStorage.getItem('mc_motors_dynamic_v3'); if (stored) data = JSON.parse(stored); } catch (e) { }
+            }
             if (!data) {
                 const v2 = localStorage.getItem('mc_motors_dynamic_v2');
                 if (v2) { try { data = JSON.parse(v2); } catch (e) { data = defaultData; } } else { data = defaultData; }
@@ -738,13 +773,56 @@
 
                 localStorage.setItem('mc_motors_dynamic_v3', JSON.stringify(configData));
 
+                // Configuración de GitHub
+                const owner = document.getElementById('githubOwner').value.trim();
+                const repo = document.getElementById('githubRepo').value.trim();
+                const token = document.getElementById('githubToken').value.trim();
+
+                localStorage.setItem('mc_github_owner', owner);
+                localStorage.setItem('mc_github_repo', repo);
+                localStorage.setItem('mc_github_token', token);
+
+                // Llamada a GitHub API
+                const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/data.json`;
+
+                let sha = null;
+                try {
+                    const getRes = await fetch(apiUrl, {
+                        headers: { 'Authorization': `token ${token}` }
+                    });
+                    if (getRes.ok) {
+                        const getJson = await getRes.json();
+                        sha = getJson.sha;
+                    }
+                } catch (err) { console.log('Archivo nuevo o error al obtener SHA', err); }
+
+                const jsonString = JSON.stringify(configData, null, 2);
+                const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
+
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Actualización de contenido desde Dashboard',
+                        content: base64Content,
+                        sha: sha
+                    })
+                });
+
+                if (!putRes.ok) {
+                    throw new Error('Error de la API de GitHub: ' + putRes.statusText);
+                }
+
                 // Local memory update just in case form is not resubmitted and page remains open
                 logoBase64Data = (finalLogoValue && finalLogoValue.startsWith('data:')) ? finalLogoValue : "";
                 cvBase64Data = (finalCvFileValue && finalCvFileValue.startsWith('data:')) ? finalCvFileValue : "";
 
             } catch (e) {
                 console.error("Failed to commit settings: ", e);
-                alert("Hubo un error guardando tu base64, el archivo quizá es muy grande.");
+                alert("Hubo un error guardando: " + e.message);
             }
 
             // End blocking overlay

@@ -1,0 +1,58 @@
+{
+  "titulo": "MC Motors",
+  "subtitulo": "Servicios Automotrices",
+  "tamanos": {
+    "tituloSize": 28,
+    "subtituloSize": 14,
+    "btnSize": 16,
+    "iconSize": 24
+  },
+  "estetica": {
+    "color": "#00a19b",
+    "foto": ""
+  },
+  "sociales": [
+    {
+      "id": "soc-1",
+      "tipo": "instagram",
+      "url": "https://instagram.com/mcmotors",
+      "icono": "fa-brands fa-instagram"
+    },
+    {
+      "id": "soc-2",
+      "tipo": "facebook",
+      "url": "https://facebook.com/mcmotors",
+      "icono": "fa-brands fa-facebook-f"
+    },
+    {
+      "id": "soc-3",
+      "tipo": "tiktok",
+      "url": "https://tiktok.com/@mcmotors",
+      "icono": "fa-brands fa-tiktok"
+    }
+  ],
+  "curriculum": {
+    "texto": "Perfil Profesional",
+    "url": "#",
+    "archivo": ""
+  },
+  "botones": [
+    {
+      "id": "btn-1",
+      "texto": "Agendar Cita",
+      "url": "https://wa.me/593980703270",
+      "icono": "fa-brands fa-whatsapp"
+    },
+    {
+      "id": "btn-2",
+      "texto": "Nuestra Ubicación",
+      "url": "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9",
+      "icono": "fa-solid fa-location-dot"
+    }
+  ],
+  "footer": {
+    "texto": "MC Motors 2026.",
+    "credito": "diseño T_LEVA",
+    "url": "https://wa.me/593984083776?text=Hola%20T_LEVA,%20vi%20tu%20trabajo%20en%20el%20sitio%20de%20MC%20Motors."
+  }
+}
