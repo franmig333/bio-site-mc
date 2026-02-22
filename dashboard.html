@@ -85,7 +85,8 @@
         }
 
         input[type="url"],
-        input[type="text"] {
+        input[type="text"],
+        select {
             width: 100%;
             padding: 10px;
             border-radius: 6px;
@@ -98,6 +99,32 @@
 
         input:focus {
             border-color: var(--accent);
+        }
+
+        select {
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px dashed var(--btn-hover);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--btn-hover);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
         }
 
         div.color-picker {
@@ -160,34 +187,14 @@
             text-align: center;
         }
 
-        /* Redes Sociales Grid */
-        .social-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-
-        .social-input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .social-input-group i {
-            font-size: 1.5rem;
-            color: var(--text-color);
-            width: 30px;
-            text-align: center;
-        }
-
-        /* Botones dinámicos */
-        #botones-container {
+        /* Tarjetas dinámicas (Botones y Redes) */
+        .dynamic-list {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
 
-        .btn-card {
+        .card {
             background: var(--bg-color);
             padding: 1rem;
             border-radius: 8px;
@@ -195,7 +202,7 @@
             position: relative;
         }
 
-        .btn-card .remove-btn {
+        .card .remove-btn {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -275,6 +282,23 @@
             pointer-events: none;
             z-index: 1000;
         }
+
+        /* Loading Overlay for file uploads */
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            color: white;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 
@@ -321,14 +345,24 @@
                 </div>
             </div>
 
-            <!-- Sección Estética -->
+            <!-- Sección Estética y Logo Modal -->
             <div class="section">
-                <h2>Diseño y Estética</h2>
+                <h2>Diseño y Foto de Perfil</h2>
+
+                <!-- FILE READER LOGO INPUT -->
                 <div class="form-group">
-                    <label>URL de Foto de Perfil / Logo</label>
+                    <label>Subir Logo desde tu dispositivo (Foto JPG/PNG)</label>
+                    <input type="file" id="logoUpload" accept="image/*">
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Esta imagen se procesará y
+                        quedará guardada de forma segura.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>O colocar URL directa de imagen externa (opcional)</label>
                     <input type="url" id="logoUrl" placeholder="https://ejemplo.com/logo.jpg">
                 </div>
-                <div class="form-group">
+
+                <div class="form-group" style="margin-top: 1.5rem;">
                     <label>Color de Acento (Bordes e interacciones)</label>
                     <div class="color-picker">
                         <input type="color" id="accentColor">
@@ -337,54 +371,48 @@
                 </div>
             </div>
 
-            <!-- Sección Redes Sociales -->
+            <!-- Sección Redes Sociales Dinámicas -->
             <div class="section">
-                <h2>Redes Sociales (Iconos horizontales)</h2>
-
-                <div class="form-group" style="max-width: 250px;">
-                    <label>Tamaño de Iconos (px)</label>
-                    <div class="range-container">
-                        <input type="range" id="iconSize" min="16" max="42" value="24"
-                            oninput="updateRangeLabel('iconSizeVal', this.value)">
-                        <span class="range-value" id="iconSizeVal">24px</span>
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <h2>Iconos Sociales (Fila horizontal)</h2>
+                    <div style="width: 120px;">
+                        <div class="range-container">
+                            <input type="range" id="iconSize" min="16" max="42" value="24"
+                                oninput="updateRangeLabel('iconSizeVal', this.value)">
+                            <span class="range-value" id="iconSizeVal">24px</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="social-grid">
-                    <div class="social-input-group">
-                        <i class="fa-brands fa-instagram"></i>
-                        <input type="url" id="igUrl" placeholder="URL Instagram">
-                    </div>
-                    <div class="social-input-group">
-                        <i class="fa-brands fa-facebook-f"></i>
-                        <input type="url" id="fbUrl" placeholder="URL Facebook">
-                    </div>
-                    <div class="social-input-group">
-                        <i class="fa-brands fa-tiktok"></i>
-                        <input type="url" id="tkUrl" placeholder="URL TikTok">
-                    </div>
-                </div>
+                <div id="sociales-container" class="dynamic-list"></div>
+                <button type="button" class="add-btn" onclick="agregarSocial()">+ Añadir Otra Red Social</button>
             </div>
 
-            <!-- Sección Currículum / Perfil Destacado -->
+            <!-- Sección Currículum / Perfil Destacado (FileReader) -->
             <div class="section">
                 <h2>Perfil Profesional / Currículum</h2>
                 <div class="form-group">
                     <label>Texto del botón</label>
                     <input type="text" id="cvText" placeholder="Ej: Perfil Profesional">
                 </div>
+
                 <div class="form-group">
-                    <label>URL del PDF o Enlace externo</label>
-                    <input type="url" id="cvUrl" placeholder="Dejar vacío para ocultar botón">
+                    <label>Subir tu CV (Archivo PDF) directo</label>
+                    <input type="file" id="cvUpload" accept="application/pdf">
+                </div>
+
+                <div class="form-group">
+                    <label>O añadir un Link de un servicio externo (Google Drive/LinkedIn)</label>
+                    <input type="url" id="cvUrl" placeholder="Si dejas todos vacíos, el botón desaparecerá">
                 </div>
             </div>
 
-            <!-- Sección Gestión de Botones Genericos -->
+            <!-- Sección Gestión de Botones Genéricos -->
             <div class="section">
-                <h2>Otros Enlaces (Verticales)</h2>
+                <h2>Botones (Verticales)</h2>
 
                 <div class="form-group" style="max-width: 250px;">
-                    <label>Tamaño Texto de Botones (px)</label>
+                    <label>Tamaño Letra Botones (px)</label>
                     <div class="range-container">
                         <input type="range" id="btnSize" min="12" max="24" value="16"
                             oninput="updateRangeLabel('btnSizeVal', this.value)">
@@ -392,62 +420,81 @@
                     </div>
                 </div>
 
-                <div id="botones-container"></div>
-                <button type="button" class="add-btn" onclick="agregarBoton()">+ Añadir Nuevo Enlace</button>
+                <div id="botones-container" class="dynamic-list"></div>
+                <button type="button" class="add-btn" onclick="agregarBoton()">+ Añadir Botón de Enlace</button>
             </div>
 
             <div class="actions">
                 <a href="index.html" class="back-btn">Ver sitio</a>
-                <button type="submit" class="save-btn">Guardar Cambios</button>
+                <button type="submit" class="save-btn">Guardar Todo Completo</button>
             </div>
         </form>
     </div>
 
-    <div id="toast" class="toast">¡Cambios guardados con éxito!</div>
+    <div id="toast" class="toast">¡Todos los cambios y archivos han sido guardados!</div>
+
+    <!-- Overlay process loader -->
+    <div id="loading-overlay">
+        <i class="fa-solid fa-circle-notch fa-spin"
+            style="font-size: 3rem; margin-bottom: 1rem; color:var(--accent);"></i>
+        <div>Procesando y guardando archivos...</div>
+    </div>
 
     <script>
         // Check Auth
         if (sessionStorage.getItem('is_admin') !== 'true') { window.location.href = 'login.html'; }
 
-        // Utils
         function updateRangeLabel(id, val) { document.getElementById(id).textContent = val + 'px'; }
-
         const colorInput = document.getElementById('accentColor');
         const colorHex = document.getElementById('color-hex');
         colorInput.addEventListener('input', (e) => { colorHex.textContent = e.target.value; });
 
-        // Default Data Structure v2 (Con tamaños)
+        // Storage Base64 Placeholders to prevent fetching files every form render
+        let logoBase64Data = "";
+        let cvBase64Data = "";
+
+        // Default Data Structure v3
         const defaultData = {
             titulo: "MC Motors",
             subtitulo: "Servicios Automotrices",
             tamanos: { tituloSize: 28, subtituloSize: 14, btnSize: 16, iconSize: 24 },
             estetica: { color: "#00a19b", foto: "" },
             sociales: [
-                { red: "instagram", url: "https://instagram.com/mcmotors", icono: "fa-brands fa-instagram" },
-                { red: "facebook", url: "", icono: "fa-brands fa-facebook-f" },
-                { red: "tiktok", url: "", icono: "fa-brands fa-tiktok" }
+                { id: "soc-1", tipo: "instagram", url: "https://instagram.com/mcmotors", icono: "fa-brands fa-instagram" },
+                { id: "soc-2", tipo: "facebook", url: "https://facebook.com/mcmotors", icono: "fa-brands fa-facebook-f" },
+                { id: "soc-3", tipo: "tiktok", url: "https://tiktok.com/@mcmotors", icono: "fa-brands fa-tiktok" }
             ],
-            curriculum: { texto: "Perfil Profesional", url: "" },
+            curriculum: { texto: "Perfil Profesional", url: "", archivo: "" },
             botones: [
                 { id: "btn-1", texto: "Agendar Cita", url: "https://wa.me/593980703270", icono: "fa-brands fa-whatsapp" },
                 { id: "btn-2", texto: "Nuestra Ubicación", url: "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9", icono: "fa-solid fa-location-dot" }
             ]
         };
 
-        // Initialize form
+        // Icon Map Helpers
+        const iconClasses = {
+            "instagram": "fa-brands fa-instagram",
+            "facebook": "fa-brands fa-facebook-f",
+            "tiktok": "fa-brands fa-tiktok",
+            "twitter": "fa-brands fa-x-twitter",
+            "youtube": "fa-brands fa-youtube",
+            "linkedin": "fa-brands fa-linkedin-in",
+            "whatsapp": "fa-brands fa-whatsapp",
+            "web": "fa-solid fa-globe"
+        };
+
+        // DOM Initializer
         document.addEventListener('DOMContentLoaded', () => {
             let data = null;
-            try {
-                const stored = localStorage.getItem('mc_motors_dynamic_v2');
-                if (stored) data = JSON.parse(stored);
-            } catch (e) { }
-
-            if (!data) { data = defaultData; }
+            try { const stored = localStorage.getItem('mc_motors_dynamic_v3'); if (stored) data = JSON.parse(stored); } catch (e) { }
+            if (!data) {
+                const v2 = localStorage.getItem('mc_motors_dynamic_v2');
+                if (v2) { try { data = JSON.parse(v2); } catch (e) { data = defaultData; } } else { data = defaultData; }
+            }
             if (!data.tamanos) { data.tamanos = defaultData.tamanos; }
 
-            // Textos y Tamaños
-            const titleInput = document.getElementById('mainTitle');
-            titleInput.value = data.titulo || "";
+            // Re-hydrate text inputs
+            document.getElementById('mainTitle').value = data.titulo || "";
             document.getElementById('titleSize').value = data.tamanos.tituloSize;
             updateRangeLabel('titleSizeVal', data.tamanos.tituloSize);
 
@@ -461,26 +508,33 @@
             document.getElementById('iconSize').value = data.tamanos.iconSize;
             updateRangeLabel('iconSizeVal', data.tamanos.iconSize);
 
-            // Estética
             if (data.estetica) {
-                document.getElementById('logoUrl').value = data.estetica.foto || "";
+                // If the stored foto is base64, we don't display it in the URL field as it freezes the UI,
+                // we keep it entirely in memory unless strictly required.
+                if (data.estetica.foto && data.estetica.foto.startsWith('http')) {
+                    document.getElementById('logoUrl').value = data.estetica.foto;
+                } else if (data.estetica.foto && data.estetica.foto.startsWith('data:')) {
+                    logoBase64Data = data.estetica.foto;
+                }
+
                 document.getElementById('accentColor').value = data.estetica.color || "#00a19b";
                 colorHex.textContent = data.estetica.color || "#00a19b";
             }
 
-            // Redes
-            if (data.sociales) {
-                data.sociales.forEach(s => {
-                    if (s.red === 'instagram') document.getElementById('igUrl').value = s.url || "";
-                    if (s.red === 'facebook') document.getElementById('fbUrl').value = s.url || "";
-                    if (s.red === 'tiktok') document.getElementById('tkUrl').value = s.url || "";
-                });
-            }
+            // Redes - DOM Dynamic Building
+            if (data.sociales && Array.isArray(data.sociales)) {
+                data.sociales.forEach(s => agregarSocialDOM(s.id, s.tipo, s.url));
+            } else { defaultData.sociales.forEach(s => agregarSocialDOM(s.id, s.tipo, s.url)); }
 
             // CV
             if (data.curriculum) {
                 document.getElementById('cvText').value = data.curriculum.texto || "";
                 document.getElementById('cvUrl').value = data.curriculum.url || "";
+
+                // Keep base64 CV string in memory implicitly
+                if (data.curriculum.archivo && data.curriculum.archivo.startsWith('data:')) {
+                    cvBase64Data = data.curriculum.archivo;
+                }
             }
 
             // Botones iterables
@@ -491,19 +545,53 @@
             }
         });
 
+        /* --- REDES SOCIALES MANAGERS --- */
+        const socialesContainer = document.getElementById('sociales-container');
+        function agregarSocial() { agregarSocialDOM('soc-' + Date.now(), "instagram", ""); }
+
+        function agregarSocialDOM(id, tipoSeleccionado, url) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.id = id;
+
+            // Generador de opciones select
+            const tipos = Object.keys(iconClasses);
+            let optionsHTML = "";
+            tipos.forEach(t => {
+                const selected = t === tipoSeleccionado ? "selected" : "";
+                optionsHTML += `<option value="${t}" ${selected}>${t.charAt(0).toUpperCase() + t.slice(1)}</option>`;
+            });
+
+            card.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Eliminar</button>
+                <div class="form-group flex-row" style="margin-bottom:0px;">
+                    <div style="width: 130px;">
+                        <label>Red Social</label>
+                        <select class="soc-type-sel">${optionsHTML}</select>
+                    </div>
+                    <div class="flex-1">
+                        <label>URL / Enlace</label>
+                        <input type="url" class="soc-url-input" value="${url}" placeholder="https://..." required>
+                    </div>
+                </div>
+            `;
+            socialesContainer.appendChild(card);
+        }
+
+        /* --- BOTONES VERTICALES MANAGERS --- */
         const botonesContainer = document.getElementById('botones-container');
-        function agregarBoton() { agregarBotonDOM('btn-' + Date.now(), "Nuevo Enlace", "", "fa-solid fa-link"); }
+        function agregarBoton() { agregarBotonDOM('btn-' + Date.now(), "Nuevo Enlace", "", "fa-solid fa-arrow-up-right-from-square"); }
 
         function agregarBotonDOM(id, texto, url, icono) {
             const card = document.createElement('div');
-            card.className = 'btn-card';
+            card.className = 'card';
             card.dataset.id = id;
-            card.dataset.icono = icono || 'fa-solid fa-link';
+            card.dataset.icono = icono || 'fa-solid fa-arrow-up-right-from-square';
 
             card.innerHTML = `
                 <button type="button" class="remove-btn" onclick="this.parentElement.remove()">Eliminar</button>
                 <div class="form-group">
-                    <label>Texto a mostrar</label>
+                    <label>Texto a mostrar (Editable)</label>
                     <input type="text" class="btn-text-input" value="${texto}" required>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
@@ -514,49 +602,113 @@
             botonesContainer.appendChild(card);
         }
 
-        // Save Functionality
-        document.getElementById('dashboard-form').addEventListener('submit', (e) => {
+        /* --- FILE READER ASYNC FUNCTION UTILS --- */
+        function readFileAsBase64(fileInput) {
+            return new Promise((resolve, reject) => {
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject("Error leyendo el archivo");
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else {
+                    resolve(null); // No file injected
+                }
+            });
+        }
+
+        /* --- GLOBAL SUBMIT PIPELINE --- */
+        document.getElementById('dashboard-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const botonesArray = [];
-            document.querySelectorAll('.btn-card').forEach(card => {
-                botonesArray.push({
-                    id: card.dataset.id,
-                    icono: card.dataset.icono,
-                    texto: card.querySelector('.btn-text-input').value,
-                    url: card.querySelector('.btn-url-input').value
+            // Start blocking overlay
+            const ov = document.getElementById('loading-overlay');
+            ov.style.display = 'flex';
+
+            try {
+                // Async resolve files natively with fallback logic
+                const newLogoB64 = await readFileAsBase64(document.getElementById('logoUpload'));
+                const newCvB64 = await readFileAsBase64(document.getElementById('cvUpload'));
+
+                // Prioritize text urls over Base64 if url inputs are explicitly filled,
+                // But normally we keep B64 if uploaded now, OR fall back to old B64 from memory.
+                let finalLogoValue = "";
+                const userLogoUrlValue = document.getElementById('logoUrl').value;
+                if (userLogoUrlValue.trim() !== '') {
+                    finalLogoValue = userLogoUrlValue;
+                } else if (newLogoB64) {
+                    finalLogoValue = newLogoB64;
+                } else if (logoBase64Data) {
+                    finalLogoValue = logoBase64Data;
+                }
+
+                let finalCvFileValue = "";
+                if (newCvB64) {
+                    finalCvFileValue = newCvB64;
+                } else if (cvBase64Data) {
+                    finalCvFileValue = cvBase64Data;
+                }
+
+                // Recopilar redes dinámicas extraídas del DOM
+                const socialesArray = [];
+                document.querySelectorAll('#sociales-container .card').forEach(card => {
+                    const tipoKey = card.querySelector('.soc-type-sel').value;
+                    socialesArray.push({
+                        id: card.dataset.id,
+                        tipo: tipoKey,
+                        icono: iconClasses[tipoKey] || "fa-solid fa-link",
+                        url: card.querySelector('.soc-url-input').value
+                    });
                 });
-            });
 
-            const socialesArray = [
-                { red: "instagram", url: document.getElementById('igUrl').value, icono: "fa-brands fa-instagram" },
-                { red: "facebook", url: document.getElementById('fbUrl').value, icono: "fa-brands fa-facebook-f" },
-                { red: "tiktok", url: document.getElementById('tkUrl').value, icono: "fa-brands fa-tiktok" }
-            ];
+                // Recopilar botones verticales extraídos del DOM
+                const botonesArray = [];
+                document.querySelectorAll('#botones-container .card').forEach(card => {
+                    botonesArray.push({
+                        id: card.dataset.id,
+                        icono: card.dataset.icono,
+                        texto: card.querySelector('.btn-text-input').value,
+                        url: card.querySelector('.btn-url-input').value
+                    });
+                });
 
-            const configData = {
-                titulo: document.getElementById('mainTitle').value,
-                subtitulo: document.getElementById('mainSubtitle').value,
-                tamanos: {
-                    tituloSize: parseInt(document.getElementById('titleSize').value),
-                    subtituloSize: parseInt(document.getElementById('subSize').value),
-                    btnSize: parseInt(document.getElementById('btnSize').value),
-                    iconSize: parseInt(document.getElementById('iconSize').value)
-                },
-                estetica: {
-                    color: document.getElementById('accentColor').value,
-                    foto: document.getElementById('logoUrl').value
-                },
-                sociales: socialesArray,
-                curriculum: {
-                    texto: document.getElementById('cvText').value,
-                    url: document.getElementById('cvUrl').value
-                },
-                botones: botonesArray
-            };
+                // Object packaging
+                const configData = {
+                    titulo: document.getElementById('mainTitle').value,
+                    subtitulo: document.getElementById('mainSubtitle').value,
+                    tamanos: {
+                        tituloSize: parseInt(document.getElementById('titleSize').value),
+                        subtituloSize: parseInt(document.getElementById('subSize').value),
+                        btnSize: parseInt(document.getElementById('btnSize').value),
+                        iconSize: parseInt(document.getElementById('iconSize').value)
+                    },
+                    estetica: {
+                        color: document.getElementById('accentColor').value,
+                        foto: finalLogoValue
+                    },
+                    sociales: socialesArray,
+                    curriculum: {
+                        texto: document.getElementById('cvText').value,
+                        url: document.getElementById('cvUrl').value,
+                        archivo: finalCvFileValue
+                    },
+                    botones: botonesArray
+                };
 
-            localStorage.setItem('mc_motors_dynamic_v2', JSON.stringify(configData));
+                localStorage.setItem('mc_motors_dynamic_v3', JSON.stringify(configData));
 
+                // Local memory update just in case form is not resubmitted and page remains open
+                logoBase64Data = (finalLogoValue && finalLogoValue.startsWith('data:')) ? finalLogoValue : "";
+                cvBase64Data = (finalCvFileValue && finalCvFileValue.startsWith('data:')) ? finalCvFileValue : "";
+
+            } catch (e) {
+                console.error("Failed to commit settings: ", e);
+                alert("Hubo un error guardando tu base64, el archivo quizá es muy grande.");
+            }
+
+            // End blocking overlay
+            ov.style.display = 'none';
+
+            // Custom UI Feedback 
             const toast = document.getElementById('toast');
             toast.style.opacity = 1;
             setTimeout(() => { toast.style.opacity = 0; }, 2500);
