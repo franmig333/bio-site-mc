@@ -41,7 +41,7 @@
       "id": "btn-identidad",
       "icono": "fa-solid fa-fingerprint",
       "texto": "IDENTIDAD DE MARCA",
-      "url": "identidad.html"
+      "url": "https://mcmotors.netlify.app/identidad.html"
     },
     {
       "id": "btn-1",
