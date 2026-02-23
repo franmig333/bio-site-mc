@@ -38,12 +38,6 @@
   },
   "botones": [
     {
-      "id": "btn-identidad",
-      "icono": "fa-solid fa-fingerprint",
-      "texto": "IDENTIDAD DE MARCA",
-      "url": "https://mcmotors.netlify.app/identidad.html"
-    },
-    {
       "id": "btn-1",
       "icono": "fa-brands fa-whatsapp",
       "texto": "Agendar Cita",
@@ -54,6 +48,12 @@
       "icono": "fa-solid fa-location-dot",
       "texto": "Nuestra Ubicación",
       "url": "https://maps.app.goo.gl/69d6rmpJYoe81Kmo9"
+    },
+    {
+      "id": "btn-identidad",
+      "icono": "fa-solid fa-fingerprint",
+      "texto": "IDENTIDAD DE MARCA",
+      "url": "https://mcmotors.netlify.app/identidad.html"
     }
   ],
   "footer": {
